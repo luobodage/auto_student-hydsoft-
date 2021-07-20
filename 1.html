@@ -1,0 +1,550 @@
+<html lang="zh-cn"><head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>慧博云通在线学习平台</title>
+
+	<!-- Bootstrap -->
+	<link href="/elms/css/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<!-- 配合 bootbox.js使用让弹出层垂直居中,bootstrap 中modal 也可以使用只需要在show.bs.modal方法使用addClass 样式modal-center-->
+	<link href="/elms/css/bootstrap/css/bootstrap.custom.css" rel="stylesheet">
+	<link href="/elms/js/toastr/toastr.css" rel="stylesheet">
+	<link href="/elms/style/web/global_new.css" rel="stylesheet">
+	<link href="/elms/style/web/header.css" rel="stylesheet">
+	<link href="/elms/style/web/footer.css" rel="stylesheet">
+	<link href="/elms/style/web/fdbox.css" rel="stylesheet">
+
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+	  <script src="/elms/js/bootstrap/html5shiv.min.js"></script>
+	  <script src="/elms/js/bootstrap/respond.min.js"></script>
+	<![endif]-->
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="/elms/js/jquery/jquery.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="/elms/js/bootstrap/bootstrap.min.js"></script>
+	<script src="/elms/js/bootstrap/bootbox.js"></script>
+	<script src="/elms/js/toastr/toastr.js"></script>
+	<script type="text/javascript">
+		var checkFrameValue = true;
+		$(function(){
+			$("#gotop").click(function(){
+				$(window).scrollTop(0);
+			});
+			/* $("#qrcodebox").find("a.close").click(function(e){
+				$("#qrcodebox").fadeOut("fast");
+			}); */
+			$("#qrcodeboxlink").click(function(e) {
+				$(".boxuser").fadeOut("fast");
+				//$("#qrcodebox").fadeIn("fast");
+			});
+			$("#hotline").find("a.close").click(function(e){
+				$("#hotline").fadeOut("fast");
+			});
+			$("#hotlinelink").click(function(e) {
+				$(".boxuser").fadeOut("fast");
+				$("#hotline").fadeIn("fast");
+			});
+			$("#operationguidelink").click(function(e) {
+				$(".boxuser").fadeOut("fast");
+			});
+			//设置fixed导航是否显示
+			var defaultnav = $("#defaultnav");
+			var fixednav = $("#fixednav");
+			$(window).scroll(function(e) {
+				var top = $(this).scrollTop();
+				if(top > 100)
+					$("#gotop").show();
+				else
+					$("#gotop").hide();
+				var mtop = defaultnav.offset().top;
+				if(top > mtop) {
+					fixednav.addClass("show");
+				} else {
+					fixednav.removeClass("show");
+				}
+			});
+			//处理用户选择身份角色登录平台
+			$("#usertype").change(function(){
+				//console.log($(this).find("option:selected").val());
+				var selectedVal = $(this).find("option:selected").val();
+				$("input[name$='usertype']").attr("value",selectedVal);
+
+			});
+			//当点击header菜单栏的每一项，切换效果
+			$(".nav.navbar-nav > li > a").click(function(){
+				var menuText = $(this).html();
+				//console.log(menuText);
+				//$(this).parent().siblings().removeClass("active");
+				//$(this).parent().addClass("active");
+				//加入fixed导航切换或者默认导航切换标签，双方标签保持一致逻辑
+				$(".nav.navbar-nav > li").removeClass("active");
+				$(".nav.navbar-nav > li > a").each(function(index, aObj){
+					var aObjText = $(this).html();
+					//console.log(aObjText);
+					if(aObjText===menuText){
+						$(this).parent().addClass("active");
+					}
+				});
+
+			});
+			 // 默认显示
+			//$(".all_courses").show("slow");
+			//给左侧菜单栏绑定单击事件
+			$("#courses_menu").click(function(event) {
+				$(".all_courses").toggle("slow");
+			});
+			//当鼠标移入左侧菜单栏的每一个div 显示伸缩层
+			$("#type_tabs > a > li").mouseenter(function(){
+				//console.log($(this).html());
+				$("#type_tabs > a > li").removeClass("selected_div");
+				$(this).addClass("selected_div");
+				var objId = $(this).attr("id");
+				$("#course_content").show("slow");
+				$(objId).siblings().removeClass("active");
+				$(objId).addClass("active");
+			}).mouseleave(function(){
+				//鼠标移出
+			 	//$(this).children("ul").removeClass("selected_div");
+			});
+
+			//当鼠标移出左侧菜单分类时隐藏伸缩层
+			$(".all_courses > .container").mouseenter(function(){
+			}).mouseleave(function(){
+				$("#type_tabs > a > li").removeClass("selected_div");
+				$("#course_content").hide("slow");
+			});
+			$("#tow-menu.dropdown-menu").on("click", "[data-stopPropagation]", function(e) {
+				e.stopPropagation();
+			});
+
+		})
+
+		/**body 显示左右纵向菜单使用方法*/
+		function showHMenu() {
+			 $(".all_courses").show("slow");
+		}
+		function SetCwinHeight(idstr) {
+			var cwin=document.getElementById(idstr);
+			if (document.getElementById) {
+				if (cwin && !window.opera) {
+					var height = 0;
+					if (cwin.contentDocument && cwin.contentDocument.body.offsetHeight) {
+						height = cwin.contentDocument.body.offsetHeight;
+					} else if (cwin.Document && cwin.Document.body.scrollHeight) {
+						height = cwin.Document.body.scrollHeight;
+					}
+					//暂时解决当 center iframe 内容不足撑满浏览器时导致footer不置底问题
+					if(parseInt($(window).height()-463) > height){
+						cwin.style.height = parseInt($(window).height()-516) + "px";
+					} else {
+						cwin.style.height = height + "px";
+					}
+				}
+			}
+			showFooter();
+		}
+
+		/**
+		*置顶
+		**/
+		function toTopPage(){
+			window.location.href="#";
+		}
+
+		/**选课中心 实现自适应高度使用方法*/
+		function setCwin(height) {
+			var cwin=document.getElementById('center');
+			cwin.style.height = height + "px";
+			showFooter();
+		}
+		/** 当center 加载完成后再显示footer **/
+		function showFooter(){
+			//firefox 下$(window).height() 获取高度等于播放器高度，故换成js 原生方法window.innerHeight
+			//但是在ie8下window.innerHeight 提示未定义故改为如下方式
+			var winHeight =	 window.innerHeight ? window.innerHeight : $(window).height();
+			var centerHeight = $("#center").outerHeight(true);
+			//console.log("winHeight: "+winHeight +" centerHeight: "+ centerHeight);
+			if(centerHeight < winHeight) {
+				if(parseInt(winHeight-centerHeight) > 100) {
+					$(".coupons").css("position", "absolute");
+				} else {
+					$(".coupons").css("position", "relative");
+				}
+	    		$(".coupons").css("width", "100%");
+	    		$(".coupons").css("bottom", "0");
+			} else{
+				$(".coupons").css("position", "");
+			}
+			$(".coupons").css("display", "");
+		}
+
+		/**
+		 *当页面转换时菜单栏中对应的菜单项显示为选中状态
+		**/
+		function changeMenu2Active(addMenuId){
+			$("#defaultnav").find("li.active").removeClass("active");
+			$("#"+addMenuId).addClass("active");
+			$("#fixednav").find("li.active").removeClass("active");
+			$("#fixed_"+addMenuId).addClass("active");
+		}
+		/**
+		 *当页面转换时菜单栏中对应的菜单项显示为选中状态
+		**/
+		function changeMenu2Active(removeMenuId, addMenuId){
+			$("#"+removeMenuId).removeClass("active");
+			$("#"+addMenuId).addClass("active");
+			$("#fixed_"+removeMenuId).removeClass("active");
+			$("#fixed_"+addMenuId).addClass("active");
+		}
+
+		/** 全局confirm 供各个子iframe 调用**/
+		function alertModal(msg) {
+			bootbox.setLocale("zh_CN")
+			return bootbox.alert({
+		        title: "提示信息！",
+		        message: msg,
+		        className: 'bb-alternate-modal',
+		        callback: function (result) {
+		            //console.log('This was logged in the callback: ' + result);
+		        }
+		    });
+		}
+
+		/** 全局confirm 供各个子iframe 调用**/
+		function confirmModal(msg) {
+			bootbox.setLocale("zh_CN")
+			return bootbox.confirm({
+		        title: "提示信息！",
+		        message: msg,
+		        buttons: {
+		            cancel: {
+		                className: 'btn-default'
+		            },
+		            confirm: {
+		                className: 'btn-primary'
+		            }
+		        },
+		        callback: function (result) {
+		            //console.log('This was logged in the callback: ' + result);
+		        }
+		    });
+		}
+
+		var _indexDialog;
+		/** 全局dialog 供各个子iframe 调用**/
+		function indexDialog(title, msg) {
+			_indexDialog = bootbox.dialog({
+				title: title || '提示信息！',
+				message: msg
+			});
+		}
+
+		function closeIndexDialog() {
+			_indexDialog.modal('hide');
+		}
+
+		/**
+		显示提示信息 type提示类型:error,info,success,warning。
+		position出现提示的位置：Top Right, Bottom Right, Bottom Left, Top Left, Center, Top Center, Bottom Center, Top Full Width, Bottom Full Width
+		timeOut延迟几秒后消失0表示消失
+		**/
+		function showToastr(type, msg, title, position, timeOut) {
+			toastr.options = {
+				closeButton: true,
+				progressBar: false
+			}
+			//toastr[type](msg, title, {positionClass: position, timeOut: timeOut})
+			toastr["info"](msg, title, {positionClass: position, timeOut: timeOut})
+		}
+		function showResource(){
+			$("#center").attr("src","listWebResourceDetail.action?type=0");
+		}
+		 // 打开模态框
+		function openModalWindow(pollId,title){
+			var url = "poll!input.action?pollId="+pollId;
+		    $("#pollPaper").attr("src",url);
+		    $("#exampleModalLabel").text(title);
+		    $("#myModal").modal({
+		    	backdrop:'static',
+		    	keyboard:true
+		    });
+		}
+		 // 关闭模态框
+		function closeModalWindow(){
+			$("#myModal").modal("hide");
+			center.reloadPage();
+		}
+	</script>
+	</head>
+	<body>
+
+
+
+
+
+
+
+
+
+<style>
+<!--
+.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default > .navbar-nav > .active > a:focus{
+	color: #555 !important;
+	background-color: #ffffff !important;
+}
+.navbar-fixed-top .navbar-nav > .active > a, .navbar-fixed-top .navbar-nav > .active > a:hover, .navbar-fixed-top > .navbar-nav > .active > a:focus{
+	color: #555 !important;
+	background-color: #ffffff !important;
+}
+.navbar-fixed-top .navbar-nav > li > a, .navbar-fixed-top .navbar-nav > li > a:hover, .navbar-fixed-top > .navbar-nav > li > a:focus{
+	background-color: #098de1 !important;
+}
+.navbar-nav > li > a {
+	color: #ffffff !important;
+	font-size: 15px;
+}
+.navbar-toggle > span {
+	background-color: #ffffff !important;
+}
+.navbar-brand {
+    padding: 10px 15px 0 15px;
+}
+body{
+	font-family: "新宋体";
+	font-weight: bold;
+}
+-->
+</style>
+<script src="/elms/js/md5.js"></script>
+<script type="text/javascript">
+<!--
+window.onload=function(){
+	function changeActive(obj){
+		alert(obj.id);
+		var lis = document.querySelectorAll('.nav .navbar-nav li');
+		for(var i=0; i<lis.length; i++){
+			lis[i].setAttribute('class','')
+		}
+	}
+}
+$(function(){
+
+	$("#loginId").keydown(function(){
+		  if (event.keyCode == 13) {
+			  $("#btn_login").trigger("click");
+		  }
+	});
+	$("#password").keydown(function(){
+		  if (event.keyCode == 13) {
+			  $("#btn_login").trigger("click");
+		  }
+	});
+});
+function login_onsubmit(usertype)
+{
+	    if (document.loginForm.loginId.value=="")
+	    {
+	     	alert("请输入您的用户名！");
+		 	document.loginForm.loginId.focus();
+		 	return;
+	    }
+	    if (document.loginForm.pwd.value=="")
+	    {
+			alert("请输入您的密码！");
+		  	loginForm.pwd.focus();
+		  	return;
+	    }
+	    var userid;
+		var pwd;
+	    userid=document.loginForm.loginId.value;
+		if (userid.length>50)
+		{
+			alert("用户名长度不能大于50,请输入有效的用户名！");
+			document.loginForm.loginId.focus();
+			return;
+		}
+		if(userid.indexOf("'")!=-1)
+		{
+			alert("不能输入单引号等无效字符！");
+			document.loginForm.loginId.focus();
+			return;
+		}
+		pwd=document.loginForm.pwd.value
+		if (pwd.length>50)
+		{
+			alert ("口令过长，重新输入！");
+			document.loginForm.pwd.focus();
+			return;
+		}
+		if(pwd.indexOf("'")!=-1)
+		{
+			alert("不能输入'等无效字符！");
+			document.loginForm.pwd.focus();
+			return;
+		}
+		if(document.loginForm.usertype.value=="1"){
+			loginForm.target="_top";
+		}
+		/* var encryptPassword ="";
+		$.ajax({
+			type:"POST",
+			url:"login!encryptPassword.action",
+			data:{key:pwd},
+			async: false,
+			success:function(data){
+				encryptPassword = data;
+			}
+		}); */
+		//由于后台密码改为MD5加密形式存储,记住用户名密码功能加入如下入判断,来判断是否进行MD5加密
+		if (document.loginForm.password.value != pwd) {
+			document.loginForm.password.value = hex_md5(pwd);
+		}
+		document.loginForm.pwd.disabled = 'disabled';
+		document.loginForm.submit();
+}
+
+function directory2Page(pageUrl,flag) {
+	var isShow = false;
+	if(flag == "show"){
+		isShow = true;
+	}
+	if(flag == "show"){
+		top.location.href=pageUrl;
+	} else {
+		center.location.href = pageUrl;
+	}
+}
+
+//密码重置的方法
+function forgotPassword(){
+	window.location.href = "/elms/web/forgot_password.jsp";
+}
+function test(){
+	$("#menuChoosePoll").trigger("click");
+}
+//-->
+</script>
+<!--头部-->
+
+<!--导航-->
+<div class="container-fluid" style="padding-left: 0px !important; padding-right: 0px !important;">
+	<nav class="nav navbar-default" role="navigation" style="background:#098de1;">
+		<div class="row" style="margin:0px;">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#" style="line-height: 50px;"><img src="/elms/web/images/hbyt/logo.png" height="30px" alt=""></a>
+			</div>
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" style="margin-left: 15px;">
+				<ul class="nav navbar-nav" id="defaultnav" style="width:90%">
+					<li id="menuIndex" class=""><a href="/elms/web/index.jsp">首页</a></li>
+					<li id="menuChooseCourseNewEntry" class="active"><a href="/elms/web/course/browse/course_entry_select.jsp" target="center">入职培训</a></li>
+					<li id="menuStudyDynamic"><a href="listBodyInnerStudyDynamicDetail.action?displaytagId=1" target="center">学习资讯</a></li>
+					<li id="menuStudyCenter"><a href="/elms/web/lanmu.jsp" target="center">学习中心</a></li>
+					<li id="menuChooseCourse"><a href="/elms/web/course/browse/course_select.jsp" target="center">选课中心</a></li>
+					<li><a href="searchTeacher.action" target="center">讲师风采</a></li>
+					<li id="menuChoosePoll"><a href="/elms/web/listWebAllPollNew.action" target="center">在线调研</a></li>
+
+					<li class="pull-right" style="margin-right:30px;">
+						<div style="line-height:50px;height:45px;">
+							<span style="color:#fff;margin-right: 15px;">姓名:<span style="letter-spacing:1px;"> </span>陈新宇</span>
+							<span style="color:#fff;margin-right: 15px;">部门:<span style="letter-spacing:1px;"> </span>BG1-DBD-BU1</span>
+							<span style="color:#fff;"><a href="logout.action" style="color:#fff;">退出</a></span>
+						</div>
+					</li>
+
+
+
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<!-- Fixed navbar -->
+	<nav class="navbar navbar-fixed-top hide" style="background:#098de1;" id="fixednav">
+		<div class="container-fluid">
+		<div class="row" style="margin: 0px;">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#" style="line-height: 50px;"><img src="/elms/web/images/hbyt/logo.png" height="30px" alt=""></a>
+			</div>
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" style="margin-left: 15px;">
+				<ul class="nav navbar-nav" style="width:90%">
+					<li id="fixed_menuIndex" class=""><a href="/elms/web/index.jsp">首页</a></li>
+					<li id="fixed_menuChooseCourseNewEntry" class="active"><a href="/elms/web/course/browse/course_entry_select.jsp" target="center">入职培训</a></li>
+					<li id="fixed_menuStudyDynamic"><a href="listBodyInnerStudyDynamicDetail.action?displaytagId=1" target="center">学习资讯</a></li>
+					<li id="fixed_menuStudyCenter"><a href="/elms/web/lanmu.jsp" target="center">学习中心</a></li>
+					<li id="fixed_menuChooseCourse"><a href="/elms/web/course/browse/course_select.jsp" target="center">选课中心</a></li>
+					<li><a href="searchTeacher.action" target="center">讲师风采</a></li>
+					<li id="fixed_menuChoosePoll"><a href="/elms/web/listWebAllPollNew.action" target="center">在线调研</a></li>
+
+					<li class="pull-right" style="margin-right:30px;">
+						<div style="line-height:50px;height:45px;">
+							<span style="color:#fff;margin-right: 15px;">姓名:<span style="letter-spacing:1px;"> </span>陈新宇</span>
+							<span style="color:#fff;margin-right: 15px;">部门:<span style="letter-spacing:1px;"> </span>BG1-DBD-BU1</span>
+							<span style="color:#fff;"><a href="logout.action" style="color:#fff;">退出</a></span>
+						</div>
+					</li>
+
+
+
+				</ul>
+			</div>
+		</div>
+		</div>
+	</nav>
+</div>
+
+	<iframe name="center" id="center" height="100%" frameborder="0" scrolling="no" width="100%" src="/elms/web/body.jsp" allowtransparency="true" onload="SetCwinHeight('center');$('.all_courses').hide();toTopPage();showFooter();" style="height: 578px;">浏览器不支持嵌入式框架，或被配置为不显示嵌入式框架。</iframe>
+
+
+
+
+
+
+<!--版权信息-->
+<div class="coupons" style="position: relative; width: 100%; bottom: 0px;">
+	<div class="container-fluid">
+		<div class="row" style="margin: 0px;padding: 10px 0px;">
+		<div class="pull-left" style="height: 58px;line-height: 58px;font-size: 16px;color:#fff;padding-left: 80px;">慧博云通科技股份有限公司</div>
+		<div class="pull-right" style="height: 58px;line-height: 58px;font-size: 16px;color:#fff;padding-right:80px;">
+				电子邮箱：hr_training@hydsoft.com
+		</div>
+		</div>
+	</div>
+</div>
+	<div class="frbox">
+		<div class="box">
+			<a id="gotop" href="#" class="c" style="display: none;"><img src="/elms/web/images/back_top.png" style="width:55px; height:76px;"></a>
+
+		</div>
+	</div>
+	<div class="modal fade bs-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+		  <div class="modal-dialog modal-lg" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+		        <h2 class="modal-title" id="exampleModalLabel"></h2>
+		      </div>
+		      <div class="modal-body" id="modal-body" style="height: 500px!important;">
+			      <iframe id="pollPaper" name="content" scrolling="auto" frameborder="no" border="0" style="width: 100%; height: 100%;"></iframe>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+
+</body></html>

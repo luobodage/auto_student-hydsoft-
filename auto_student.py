@@ -1,18 +1,30 @@
+import re
 import time
 
-import helium as hl
+# import helium as hl
+import requests
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 
-hl.start_chrome(
-    'http://eln.hydsoft.net:8081/elms/web/course/browse/viewAiccCourse.action?userId=H012478&courseId=SELFM00082&typeId=1')
+driver = webdriver.Chrome()
 
-hl.write('chenxinyu@hydsoft.com', into='用户名/邮箱')
-time.sleep(2)
-hl.write('xxx', into='密码')
-time.sleep(2)
-hl.click('登 录')
-time.sleep(2)
-hl.click('2021新员工入职培训 ')
-time.sleep(20)
+driver.get('http://eln.hydsoft.net:8081/elms/web/login.jsp')
+time.sleep(1)
+driver.find_element_by_name('loginId').send_keys('chenxinyu@hydsoft.com')
+time.sleep(1)
+driver.find_element_by_name('pwd').send_keys('Hydsoft123')
+time.sleep(1)
+driver.find_element_by_id('btn_login').click()
+
+driver.find_element_by_id('menuChooseCourseNewEntry').click()
+time.sleep(3)
+html = driver.find_element_by_xpath("//*").get_attribute("outerHTML")
+print(html)
+detail_url = re.findall(r'<iframe src="(.*?)" id=',html)
+print(detail_url)
+url = 'http://eln.hydsoft.net:8081/elms/web/' + detail_url[0]
+driver.get(url)
+time.sleep(30)
 for i in range(40):
     time.sleep(3)
-    hl.press(hl.SPACE)
+    driver.find_element_by_class_name('textLayer').send_keys(Keys.SPACE)
